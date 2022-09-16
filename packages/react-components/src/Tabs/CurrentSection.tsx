@@ -15,10 +15,12 @@ interface Props {
 
 function CurrentSection ({ className = '', icon, text }: Props): React.ReactElement<Props> {
   return (
+    <span className='media-wrapper'>
     <div className={`${className} active-tab`}>
       <Icon icon={icon} />
       <span>{text}</span>
     </div>
+    </span>
   );
 }
 
@@ -41,5 +43,8 @@ export default React.memo(styled(CurrentSection)`
 
   @media only screen and (max-width: 900px) {
     margin: 0 1.5rem;
+  }
+  @media only screen and (max-width: 800px) {
+  display: none;
   }
 `);

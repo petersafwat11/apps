@@ -86,7 +86,6 @@ export default React.memo(styled(Tabs)`
   border-bottom: 1px solid var(--border-tabs);
   text-align: left;
   z-index: 1;
-
   & .tabs-container {
     display: flex;
     align-items: center;
@@ -113,5 +112,30 @@ export default React.memo(styled(Tabs)`
     @media only screen and (max-width: 900px) {
       margin: 0 2.72rem 0 2.35rem;
     }
+    @media only screen and (max-width: 800px) {
+      margin: 0 1.5rem;
+    }
+  }
+    @media only screen and (max-width: 800px) {
+  .ui--TabsList {
+      margin-top: -10px;
+      display: flex;
+      align-items: center;
+      justify-content: spance-around
+      width: 100%;
+      margin: 0 auto;
+
+    }
+    @media only screen and (max-width: 600px) {
+  .ui--TabsList {
+      font-size: 1rem;
+      width: 100%;
+      justify-content: spance-around
+      width: 100%;
+      margin: 0 auto;
+      flex: 1 1;
+      flex-wrap: wrap;
+    }
+
   }
 `);

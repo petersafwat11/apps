@@ -10,7 +10,7 @@ interface TabsSectionDelimiterProps {
 
 function TabsSectionDelimiter ({ className = '' }: TabsSectionDelimiterProps): React.ReactElement {
   return (
-    <div className={className}>
+    <div className={`${className} arrow`} >
       <svg
         fill='none'
         height='47'
@@ -31,4 +31,6 @@ function TabsSectionDelimiter ({ className = '' }: TabsSectionDelimiterProps): R
 export default React.memo(styled(TabsSectionDelimiter)`
   height: 100%;
   width: auto;
+      @media only screen and (max-width: 800px) {
+    display: none;
 `);

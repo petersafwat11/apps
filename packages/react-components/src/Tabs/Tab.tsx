@@ -84,6 +84,7 @@ export default React.memo(styled(Tab)`
     &:hover {
       cursor: default;
     }
+
   }
 
   .tabLinkText {
@@ -100,4 +101,11 @@ export default React.memo(styled(Tab)`
   .tabIcon {
     margin-left: 0.75rem;
   }
+   @media only screen and (max-width: 800px) {
+    .tabIcon {
+    margin-left: 0.25rem;
+  }
+    }
+
+
 `);

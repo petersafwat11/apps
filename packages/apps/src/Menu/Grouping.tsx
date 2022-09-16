@@ -13,12 +13,13 @@ import Item from './Item';
 interface Props extends Group {
   className?: string;
   isActive: boolean;
+  mobile: boolean
 }
 
 const SHA_COL = 'rgba(34, 36, 38, 0.12)';
 const SHA_OFF = '5px';
 
-function Grouping ({ className = '', isActive, name, routes }: Props): React.ReactElement<Props> {
+function Grouping ({ className = '', isActive, name, routes, mobile= false }: Props): React.ReactElement<Props> {
   if (routes.length === 1 && routes[0].group === 'settings') {
     return (
       <Item
@@ -28,7 +29,6 @@ function Grouping ({ className = '', isActive, name, routes }: Props): React.Rea
       />
     );
   }
-
   return (
     <li className={`${className} ${isActive ? 'isActive' : ''}`}>
       <div className={`groupHdr ${!isActive ? 'highlight--color-contrast' : ''}`}>
@@ -106,7 +106,6 @@ export default React.memo(styled(Grouping)`
       padding-bottom: 2rem;
       margin-bottom: -2rem;
     }
-
     .groupMenu {
       display: block;
 

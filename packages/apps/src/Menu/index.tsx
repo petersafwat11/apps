@@ -11,8 +11,9 @@ import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { AiOutlineMenu } from 'react-icons/ai';
 import { CgProfile } from 'react-icons/cg';
+import {GrFormClose} from 'react-icons/gr';
 import {MdKeyboardArrowRight} from 'react-icons/md'
-
+import {TbGridDots} from 'react-icons/tb'
 import createRoutes from '@polkadot/apps-routing';
 import { useAccounts, useApi, useCall, useTeleport } from '@polkadot/react-hooks';
 
@@ -22,7 +23,8 @@ import ChainInfo from './ChainInfo';
 import Grouping from './Grouping';
 import Item from './Item';
 import NodeInfo from './NodeInfo';
-import Tabs from '../../../react-components/src/Menu/index';
+import AccountLogo from '../../public/assets/3.PNG'
+import Overview from '../../../page-accounts/src/Accounts/index'
 interface Props {
   className?: string;
 }
@@ -136,7 +138,10 @@ function Menu ({ className = '' }: Props): React.ReactElement<Props> {
           {setNavApperience(!navApperience)};
           if (subCategory)
           {setSubCategory(!subCategory)}
+          if (accountmodal)
+          {setAccountmodal(!accountmodal)}
     }
+    const [accountmodal,setAccountmodal ] =useState<boolean>(false);
   return (
     <div className={`${className}${(!apiProps.isApiReady || !apiProps.isApiConnected) ? ' isLoading' : ''} highlight--bg`}>
          <div className={`${navApperience? 'small-screen':'big-screen' }`}>
@@ -224,7 +229,9 @@ function Menu ({ className = '' }: Props): React.ReactElement<Props> {
              }
           </div>
          </div>
-        <div className={`${(navApperience||subCategory)? 'ovarlay': 'normal'}`} onClick={closeMenuHandeler}>
+        <div className={`${(navApperience||subCategory )? 'ovarlay': 'normal'}`} onClick={closeMenuHandeler}>
+        </div>
+        <div className={`${(accountmodal )&& 'ovarlay-acount-modal'}`} onClick={closeMenuHandeler}>
         </div>
       <div className='menuContainer'>
         <div className='menu-icon' onClick={()=>{setNavApperience(!navApperience)}}>
@@ -257,14 +264,26 @@ function Menu ({ className = '' }: Props): React.ReactElement<Props> {
           </ul>
         </div>
         <NodeInfo className='media--1400' />
-           <span className='accounts-mobile-screen'>
-              <Link to='/accounts' className='menu-item accounts-mobile' >
-                <p>Accounts</p>
-              </Link>
-              <Link to='/addresses' className='menu-item accounts-mobile' onClick={closeMenuHandeler} >
-                <p >Adress book</p>
-              </Link>
-            </span>        
+              <div className='account-logo'  onClick={()=>{setAccountmodal(!accountmodal)}}>
+                <TbGridDots size={20}/>
+              </div>
+            {accountmodal&&
+              <div className='modal-header'>
+                {/* <div className='button-header-model'>
+                  <button type='button' className='btn-modal-header' onClick={addAcountModalHandler}>
+                    <span className='button-icon'><GrFormAdd/> </span> Add acount</button>
+                  <button type='button' className='btn-modal-header' onClick={restoreJsonModalHandler}>
+                    <span className='button-icon'><MdSync/> </span> Restore Json</button>
+                </div> */}
+                <Overview modelAccount={true}/>  
+                <div className='close-modal-div' >
+                  <div className='close-modal-wrapper' onClick={()=>{setAccountmodal(!accountmodal)}}>
+                  <span className='close-modal-icon'><GrFormClose/></span> 
+                  <button className='close-modal' >Close</button>            
+                  </div>
+                </div>
+              </div>
+            }       
       </div>
     </div>
   );
@@ -275,7 +294,66 @@ export default React.memo(styled(Menu)`
   padding: 0;
   z-index: 220;
   position: relative;
-  
+  .button-header-model{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 8px;
+    gap: 6px;
+}
+
+  .modal-header{
+    position: fixed;
+    top: 2rem;
+    background: blanchedalmond;
+    color: blue;
+    padding: 10px;
+    left: 2%;
+    width: 96%;
+    z-index: 300;
+    display:flex;
+    flex-direction: column
+  }
+  .close-modal-div{
+    display: flex;
+    align-items: center;
+    justify-content: end;
+  }
+  .close-modal-wrapper{
+    display: flex;
+    align-items: center;
+    margin: 4px;
+    gap:7px;
+    cursor: pointer;
+    border: none;
+    background: inherit;
+    border-raduis: 5px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: larger;
+    color: inherit;
+  }
+  .close-modal-wrapper:hover{
+    background: #e6007a;
+    color: rgba(255,253,251,0.875);
+    text-shadow: none;
+    color:white;
+  }
+  .close-modal{
+        border: none;
+    background: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+  }
+  .account-logo{
+    color: #4c4c4c;
+    background: #f2f2f2;
+    padding: 5px;
+    border-radius: 100%;
+    display: flex;
+  }
+    
   .menu-icon{
     display:none;
   }
@@ -353,9 +431,16 @@ export default React.memo(styled(Menu)`
       background: #666666;
       opacity: 0;
   }
-//   .accounts-mobile-screen{
-//   display: none;
-// }
+    .ovarlay-acount-modal{
+      display: bolck;
+      position : fixed;
+      z-index: 60;
+      width: 100%;
+      height: 100%;
+      background: #666666;
+      opacity: .4;
+      cursor: pointer;
+    }
 .accounts-mobile-screen{
    display: none; 
 }
@@ -465,22 +550,49 @@ export default React.memo(styled(Menu)`
     transition: all .3s;
     padding-top: 30px;
   }
-  // .profile{
-  //   display: inline-block;
-  //   cursor: pointer;
-  //   padding: 2px;
-  // }
-.accounts-mobile-screen{
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-}
-.accounts-mobile > p{
-  color: white;
-}
-.accounts-mobile:hover{
-  background: #CE116E
-}
+  table{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    width:100%
+  }
+  tbody, thead{
+    width:100%;
+  }
+  thead tr {
+      display: flex;
+      flex: 1 1 ;
+      align-itmes: center;
+      justify-content: space-between;
+    width:100%   
+  }tbody tr {
+      display: flex;
+      flex: 1 1 ;
+      align-itmes: center;
+      justify-content: space-between;
+    width:100%   
+  }
+    tr{
+      width:100%
+      display: flex;
+      flex: 1 1 ;
+      align-itmes: center;
+      justify-content: space-between;
+    }
+
+  tbody td , thead td{
+    padding:0;
+    margin: 0;
+    flex: 1 1 ;
+  }
+  .favorite, .together{
+    display:none;
+  }
+  
 
   }
+    @media only screen and (max-width: 550px) {
+  .balance, .default, .number{
+   display: none 
+  }}
 `);

@@ -124,9 +124,9 @@ function getStats (...apis: ApiPromise[]): [ProviderStats, number] {
         r.total.requests += stats.total.requests;
         r.total.subscriptions += stats.total.subscriptions;
         r.total.timeout += stats.total.timeout;
+            console.log(stats);
       }
     }
-
     return r;
   }, {
     active: {

@@ -25,7 +25,6 @@ import Account from './Account';
 import BannerClaims from './BannerClaims';
 import BannerExtension from './BannerExtension';
 import Summary from './Summary';
-
 interface Balances {
   accounts: Record<string, AccountBalance>;
   summary?: AccountBalance;
@@ -33,7 +32,8 @@ interface Balances {
 
 interface Props {
   className?: string;
-  onStatusChange: (status: ActionStatus) => void;
+  onStatusChange?: (status: ActionStatus) => void;
+  modelAccount?: boolean;
 }
 
 interface SortControls {
@@ -45,7 +45,8 @@ const DEFAULT_SORT_CONTROLS: SortControls = { sortBy: 'date', sortFromMax: true 
 
 const STORE_FAVS = 'accounts:favorites';
 
-function Overview ({ className = '', onStatusChange }: Props): React.ReactElement<Props> {
+function Overview ({ className = '', onStatusChange, modelAccount }: Props): React.ReactElement<Props> {
+  console.log( onStatusChange)
   const { t } = useTranslation();
   const { api } = useApi();
   const { allAccounts, hasAccounts } = useAccounts();
@@ -171,7 +172,52 @@ function Overview ({ className = '', onStatusChange }: Props): React.ReactElemen
   const dropdownOptions = () => sortCategory.map((x) => ({ text: x, value: x }));
 
   const onSortDirectionChange = () => () => setSortBy({ sortBy, sortFromMax: !sortFromMax });
+  console.log(sortedAccounts)
+  if(modelAccount){
+    return (
+      <div className='header-model'>
+              {isCreateOpen && (
+        <CreateModal
+          onClose={toggleCreate}
+          onStatusChange={onStatusChange}
+        />
+      )}
+      {isImportOpen && (
+        <ImportModal
+          onClose={toggleImport}
+          onStatusChange={onStatusChange}
+        />
+      )}
 
+        <div className='button-header-model'>
+          {/* <p className='model-text' >your Accounts</p> */}
+          <div>
+            <Button
+              icon='plus'
+              isDisabled={isIpfs}
+              label={t<string>('Add account')}
+              onClick={_openCreateModal}
+            />
+            <Button
+              icon='sync'
+              isDisabled={isIpfs}
+              label={t<string>('Restore JSON')}
+              onClick={toggleImport}
+            />
+          </div>
+        </div>
+        <Table
+        empty={!isLoading && sortedAccounts && t<string>("You don't have any accounts. Some features are currently hidden and will only become available once you have accounts.")}
+        header={header.current}
+        withCollapsibleRows
+      >
+        {!isLoading &&
+          sortedAccounts.map(({ address }) => accountComponents[address])
+        }
+      </Table>
+      </div>
+    )
+  }
   return (
     <div className={className}>
       {isCreateOpen && (
@@ -211,64 +257,70 @@ function Overview ({ className = '', onStatusChange }: Props): React.ReactElemen
       <BannerClaims />
       <Summary balance={balances.summary} />
       <SummaryBox>
-        <section
-          className='dropdown-section'
-          data-testid='sort-by-section'
-        >
-          <SortDropdown
-            defaultValue={sortBy}
-            label={t<string>('sort by')}
-            onChange={onDropdownChange()}
-            onClick={onSortDirectionChange()}
-            options={dropdownOptions()}
-            sortDirection={sortFromMax ? 'ascending' : 'descending'}
-          />
-          <FilterInput
-            filterOn={filterOn}
-            label={t<string>('filter by name or tags')}
-            setFilter={setFilter}
-          />
-        </section>
-        <Button.Group>
-          <Button
-            icon='plus'
-            isDisabled={isIpfs}
-            label={t<string>('Add account')}
-            onClick={_openCreateModal}
-          />
-          <Button
-            icon='sync'
-            isDisabled={isIpfs}
-            label={t<string>('Restore JSON')}
-            onClick={toggleImport}
-          />
-          <Button
-            icon='qrcode'
-            label={t<string>('Add via Qr')}
-            onClick={toggleQr}
-          />
-          {isLedgerEnabled && (
-            <>
-              <Button
-                icon='project-diagram'
-                label={t<string>('Add via Ledger')}
-                onClick={toggleLedger}
-              />
-            </>
-          )}
-          <Button
-            icon='plus'
-            isDisabled={!(api.tx.multisig || api.tx.utility) || !hasAccounts}
-            label={t<string>('Multisig')}
-            onClick={toggleMultisig}
-          />
-          <Button
-            icon='plus'
-            isDisabled={!api.tx.proxy || !hasAccounts}
-            label={t<string>('Proxied')}
-            onClick={toggleProxy}
-          />
-        </Button.Group>
+        <div className='summary__box'>
+
+          <section
+            className='dropdown-section'
+            data-testid='sort-by-section'
+          >
+            <SortDropdown
+              defaultValue={sortBy}
+              label={t<string>('sort by')}
+              onChange={onDropdownChange()}
+              onClick={onSortDirectionChange()}
+              options={dropdownOptions()}
+              sortDirection={sortFromMax ? 'ascending' : 'descending'}
+            />
+            <FilterInput
+              filterOn={filterOn}
+              label={t<string>('filter by name or tags')}
+              setFilter={setFilter}
+            />
+          </section>
+          <section className='buttons'>
+          <Button.Group>
+            <Button
+              icon='plus'
+              isDisabled={isIpfs}
+              label={t<string>('Add account')}
+              onClick={_openCreateModal}
+            />
+            <Button
+              icon='sync'
+              isDisabled={isIpfs}
+              label={t<string>('Restore JSON')}
+              onClick={toggleImport}
+            />
+            <Button
+              icon='qrcode'
+              label={t<string>('Add via Qr')}
+              onClick={toggleQr}
+            />
+            {isLedgerEnabled && (
+              <>
+                <Button
+                  icon='project-diagram'
+                  label={t<string>('Add via Ledger')}
+                  onClick={toggleLedger}
+                />
+              </>
+            )}
+            <Button
+              icon='plus'
+              isDisabled={!(api.tx.multisig || api.tx.utility) || !hasAccounts}
+              label={t<string>('Multisig')}
+              onClick={toggleMultisig}
+            />
+            <Button
+              icon='plus'
+              isDisabled={!api.tx.proxy || !hasAccounts}
+              label={t<string>('Proxied')}
+              onClick={toggleProxy}
+            />
+          </Button.Group>
+
+          </section>
+        </div>
       </SummaryBox>
       <Table
         empty={!isLoading && sortedAccounts && t<string>("You don't have any accounts. Some features are currently hidden and will only become available once you have accounts.")}
@@ -287,10 +339,43 @@ export default React.memo(styled(Overview)`
   .ui--Dropdown {
     width: 15rem;
   }
+.summary__box{
+  display: bolck;
+}
 
+}
+.header-model{
+  display:block;
+  position: fixed; 
+  z-index:500;
+  top:10rem;
+  left:2rem;
+  margin: auto;
+  width: 90%;
+  min-height: 250px;
+  background: white;
+  color: black;
+}
   .dropdown-section {
+    padding: 0 5px 0 0;
     display: flex;
     flex-direction: row;
     align-items: center;
-  }
+    justify-content: center;
+    width: 100vw;
+    flex: 1 1;
+    flex-wrap: wrap;
+    gap: 5px
+}
+  .buttons {
+    padding: 0 5px 0 0 ;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    flex: 1 1 ;
+    flex-wrap: wrap;
+    gap: 5px
+       }
 `);

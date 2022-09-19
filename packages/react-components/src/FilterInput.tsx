@@ -38,4 +38,10 @@ export default React.memo(styled(Filter)`
     margin: 0;
     height: 3.893rem;
   }
+  @media only screen and (max-width: 600px) {
+      width:250px;
+  :not(:only-child) {
+    margin-left: 0;
+  }
+    }
 `);

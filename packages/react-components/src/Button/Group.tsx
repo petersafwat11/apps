@@ -18,7 +18,11 @@ function ButtonGroup ({ children, className = '', isCentered }: GroupProps): Rea
 export default React.memo(styled(ButtonGroup)`
   margin: 1rem 0;
   text-align: right;
-
+  display: flex;
+   justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
   & .clear {
     clear: both;
   }

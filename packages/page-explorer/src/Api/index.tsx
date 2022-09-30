@@ -1,9 +1,21 @@
 // Copyright 2017-2022 @polkadot/app-explorer authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+import * as React from "react";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer
+} from "recharts";
+import { curveCardinal } from 'd3-shape';
+
 
 import type { Stats } from '@polkadot/react-components/ApiStats/types';
 
-import React, { useContext, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import styled from 'styled-components';
 
 import { ApiStatsContext, CardSummary, Spinner, SummaryBox } from '@polkadot/react-components';
@@ -15,7 +27,12 @@ import { useTranslation } from '../translate';
 interface Props {
   className?: string;
 }
-
+interface requestsChart1 {
+  request : number,
+  subscribe: number,
+  total: number,
+  avarage: number
+}
 interface ChartContents {
   labels: string[];
   values: number[][];
@@ -45,6 +62,18 @@ function getPoints (all: Stats[]): ChartInfo {
     labels: [],
     values: [[], [], [], []]
   };
+  const requestsChart1 :{request :number ,
+  subscribe: number,
+  total: number,
+  date:string,
+  avarage:number}[]=[];
+
+   const transferChart: {prevRecv :number ,
+  recvAvg: number,
+  prevSent: number,
+  date:string,
+  }[] 
+   =[];
 
   const reqBase = all.reduce((a, { stats: { active: { requests, subscriptions } } }) => a + requests + subscriptions, 0);
   let { bytesRecv: prevRecv, bytesSent: prevSent, errors: prevErrors } = all[0].stats.total;
@@ -67,20 +96,27 @@ function getPoints (all: Stats[]): ChartInfo {
     requestsChart.values[1].push(aReq);
     requestsChart.values[2].push(aSub);
     requestsChart.values[3].push(reqBase / all.length);
-
+     requestsChart1.push({  request :aReq ,
+  subscribe: aSub,
+  total: aReq + aSub,
+  date : time,
+  avarage:reqBase / all.length
+}) 
     recvTotal += bytesRecv - prevRecv;
     prevErrors = errors;
     prevRecv = bytesRecv;
     prevSent = bytesSent;
+    transferChart.push({date: time,prevRecv : bytesSent,
+    prevSent :bytesRecv ,recvAvg : recvTotal / (all.length - 1)
+})
   }
-
   const recvAvg = recvTotal / (all.length - 1);
 
   for (let i = 1; i < all.length; i++) {
     bytesChart.values[2].push(recvAvg);
   }
 
-  return { bytesChart, errorsChart, requestsChart };
+  return { bytesChart, errorsChart, requestsChart,requestsChart1,transferChart };
 }
 
 function Api ({ className }: Props): React.ReactElement<Props> {
@@ -95,7 +131,7 @@ function Api ({ className }: Props): React.ReactElement<Props> {
     }), [t]
   );
 
-  const { bytesChart, requestsChart } = useMemo(
+  const { bytesChart, requestsChart,requestsChart1,transferChart } = useMemo(
     () => getPoints(stats),
     [stats]
   );
@@ -105,6 +141,7 @@ function Api ({ className }: Props): React.ReactElement<Props> {
   }
 
   const { stats: { total: { bytesRecv, bytesSent, requests: tReq, subscriptions: tSub } } } = stats[stats.length - 1];
+const cardinal = curveCardinal.tension(0.2);
 
   return (
     <div className={className}>
@@ -118,18 +155,104 @@ function Api ({ className }: Props): React.ReactElement<Props> {
           <CardSummary label={t<string>('total sub')}>{formatNumber(tSub)}</CardSummary>
         </section>
       </SummaryBox>
-      <Chart
-        colors={COLORS_REQUESTS}
-        legends={requestsLegend}
-        title={t<string>('requests')}
-        value={requestsChart}
+      <div>
+        <ResponsiveContainer width="100%" height={200}>
+    <AreaChart
+      width={500}
+      height={400}
+      data={requestsChart1}
+      margin={{
+        top: 10,
+        right: 30,
+        left: 0,
+        bottom: 0
+      }}
+    >
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="date" />
+      <YAxis />
+      <Tooltip/>
+      <Area
+        type="monotone"
+        dataKey="total"
+        stroke="#82ca9d"
+        fill="#82ca9d"
+        fillOpacity={0.3}
       />
+      <Area
+        type='monotone'
+        dataKey="subscribe"
+        stroke="#8884d8"
+        fill="#8884d8"
+        fillOpacity={0.3}
+      />
+      <Area
+        type='monotone'
+        dataKey="avarage"
+        stroke="#545455"
+        fill="#919396"
+        fillOpacity={0.3}
+      />
+        <Area
+        type='monotone'
+        dataKey="request"
+        stroke="#0A437D"
+        fill="#1A77D4"
+
+        fillOpacity={0.3}
+      />
+    </AreaChart>
+        </ResponsiveContainer>
+      </div>
+{/* 
       <Chart
         colors={COLORS_BYTES}
         legends={bytesLegend}
         title={t<string>('transfer')}
         value={bytesChart}
+      /> */}
+            <div>
+        <ResponsiveContainer width="100%" height={200}>
+    <AreaChart
+      width={500}
+      height={400}
+      data={transferChart}
+      margin={{
+        top: 10,
+        right: 30,
+        left: 0,
+        bottom: 0
+      }}
+    >
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="date" />
+      <YAxis />
+      <Tooltip/>
+      <Area
+        type="monotone"
+        dataKey="prevRecv"
+        stroke="#8884d8"
+        fill="#8884d8"
+        fillOpacity={0.3}
       />
+      <Area
+        type='monotone'
+        dataKey="prevSent"
+        stroke="#82ca9d"
+        fill="#82ca9d"
+        fillOpacity={0.3}
+      />
+      <Area
+        type='monotone'
+        dataKey="recvAvg"
+        stroke="#0A437D"
+        fill="#1A77D4"
+        fillOpacity={0.3}
+      />
+    </AreaChart>
+        </ResponsiveContainer>
+      </div>
+
     </div>
   );
 }
@@ -146,3 +269,10 @@ export default React.memo(styled(Api)`
     margin-top: 1rem;
   }
 `);
+
+
+
+
+
+
+

@@ -38,7 +38,7 @@ function Table ({ children, className = '', empty, emptySpinner, filter, footer,
   const [isEmpty, bodyChildren] = extractBodyChildren(children);
 
   return (
-    <div className={`ui--Table ${className}`}>
+    <div className={`ui--Table ${className} responsive`}>
       {legend}
       <table className={`${(isFixed && !isEmpty) ? 'isFixed' : 'isNotFixed'} ${isInline ? 'isInline' : ''} highlight--bg-faint${withCollapsibleRows ? ' withCollapsibleRows' : ''}`}>
         <Head
@@ -64,8 +64,10 @@ function Table ({ children, className = '', empty, emptySpinner, filter, footer,
 
 export default React.memo(styled(Table)`
   max-width: 100%;
+      overflow: scroll;
   width: 100%;
-
+.responsive{
+    overflow: scroll}
   table {
     border-spacing: 0;
     max-width: 100%;

@@ -15,6 +15,7 @@ import Proposals from './Proposals';
 import Propose from './Propose';
 import Referendums from './Referendums';
 import Summary from './Summary';
+import styled from 'styled-components';
 
 interface Props {
   className?: string;
@@ -30,6 +31,7 @@ function Overview ({ className }: Props): React.ReactElement<Props> {
   return (
     <div className={className}>
       <Summary referendumCount={referendums?.length} />
+      <div className='button-group'>
       <Button.Group>
         <Button
           icon='plus'
@@ -42,17 +44,27 @@ function Overview ({ className }: Props): React.ReactElement<Props> {
           onClick={togglePropose}
         />
       </Button.Group>
+      </div>
       {isPreimageOpen && (
         <PreImage onClose={togglePreimage} />
       )}
       {isProposeOpen && (
         <Propose onClose={togglePropose} />
       )}
+      <div className='content'>
       <Referendums referendums={referendums} />
       <Proposals />
       <Externals />
+      </div>
     </div>
   );
 }
 
-export default React.memo(Overview);
+export default React.memo(styled(Overview)`
+.button-group{ 
+  display: flex;
+   justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px; }
+`);

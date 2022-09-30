@@ -9,6 +9,7 @@ import { Table } from '@polkadot/react-components';
 
 import { useTranslation } from '../translate';
 import Referendum from './Referendum';
+import styled from 'styled-components';
 
 interface Props {
   className?: string;
@@ -32,7 +33,7 @@ function Referendums ({ className = '', referendums }: Props): React.ReactElemen
 
   return (
     <Table
-      className={className}
+      className={className+'responsive'}
       empty={referendums && t<string>('No active referendums')}
       header={headerRef.current}
     >
@@ -46,4 +47,8 @@ function Referendums ({ className = '', referendums }: Props): React.ReactElemen
   );
 }
 
-export default React.memo(Referendums);
+export default React.memo(styled(Referendums)`
+.responsive{
+  ovarflow: scroll !important;
+}
+`);

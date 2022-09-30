@@ -162,11 +162,12 @@ export default React.memo(styled(CalendarApp)`
   .calendarFlex {
     align-items: flex-start;
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
 
     .wrapper-style {
-      flex: 1;
-
+      flex: 1 ;
+      align-items: center;
+      justify-content: center;
       .upcoming-events {
         position: relative;
         max-width: 100%;
@@ -203,4 +204,18 @@ export default React.memo(styled(CalendarApp)`
       }
     }
   }
+      @media only screen and (max-width: 756px){
+      .calendarFlex {
+          align-items: atart;
+          display: flex;
+          flex-wrap: wrap;
+      }
+       .Month-sc-kjxlcs-0 ,.eDBupl{
+        margin: auto;
+       }
+      .wrapper-style {
+        margin-top: 30px;
+      }
+  }
+
 `);
